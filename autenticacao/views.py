@@ -63,3 +63,8 @@ def login(request):
             return redirect('/')
 
     return render(request, 'login.html')
+
+
+def sair(request):
+    auth.logout(request)
+    return redirect('/auth/logar')
