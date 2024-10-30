@@ -12,6 +12,9 @@ from .utils import password_is_valid
 # Create your views here.
 def cadastro(request):
     if request.method == "GET":
+        if request.user.is_authenticated:
+            return redirect('/')
+
         return render(request, 'cadastro.html')
     
     elif request.method == "POST":
@@ -41,6 +44,9 @@ def cadastro(request):
 
 def login(request):
     if request.method == 'GET':
+        if request.user.is_authenticated:
+            return redirect('/')
+
         return render(request, 'login.html')
     
     elif request.method == 'POST':
