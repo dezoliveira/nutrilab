@@ -37,3 +37,23 @@ def cadastro(request):
         except:
             messages.add_message(request, constants.ERROR, 'Erro interno do sistema')
             return redirect('/auth/cadastro')
+        
+
+def login(request):
+    if request.method == 'GET':
+        return render(request, 'login.html')
+    
+    elif request.method == 'POST':
+        username = request.POST.get('usuario')
+        senha = request.POST.get('senha')
+
+        usuario = auth.authenticate(username=username, password=senha)
+
+        if not usuario:
+            messages.add_message(request, constants.ERROR, 'Username ou senha inválidos')
+            return redirect('/auth/login')
+        else:
+            auth.login(request, usuario)
+            return redirect('/')
+
+    return render(request, 'login.html')
