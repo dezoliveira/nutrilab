@@ -1,7 +1,7 @@
 # Django
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.messages import constants
 from django.contrib import messages, auth
@@ -45,7 +45,7 @@ def cadastro(request):
             ativacao.save()
 
             path_template = os.path.join(settings.BASE_DIR, 'autenticacao/templates/emails/cadastro_confirmado.html')
-            email_html(path_template, 'Cadastro confirmado', [email,], username=username)
+            email_html(path_template, 'Cadastro confirmado', [email,], username=username, link_ativacao=f'127.0.0.1:8000/auth/ativar_conta/{token}')
 
             messages.add_message(request, constants.SUCCESS, 'Usuário cadastrado com sucesso')
             return redirect('/auth/login')
@@ -81,3 +81,20 @@ def login(request):
 def sair(request):
     auth.logout(request)
     return redirect('/auth/logar')
+
+
+def ativar_conta(request, token):
+    token = get_object_or_404(Ativacao, token=token)
+
+    if token.ativo:
+         messages.add_message(request, constants.WARNING, 'Esse token já foi usado')
+         return redirect('/auth/logar')
+    
+    user = User.objects.get(username=token.user.username)
+    user.is_active = True
+    user.save()
+    token.ativo = True
+    token.save()
+    messages.add_message(request, constants.SUCCESS, 'Conta ativada com sucesso')
+    redirect('auth/logar')
+
