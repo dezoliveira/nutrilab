@@ -8,7 +8,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 
-
+# Verify if password is valid
 def password_is_valid(request, password, confirm_password):
 
     if len(password) < 6:
@@ -34,6 +34,7 @@ def password_is_valid(request, password, confirm_password):
     return True
 
 
+# Generate email html
 def email_html(path_template: str, assunto: str, para: list, **kwargs) -> dict:
     
     html_content = render_to_string(path_template, kwargs)
