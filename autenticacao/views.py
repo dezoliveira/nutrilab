@@ -7,6 +7,8 @@ from django.contrib.messages import constants
 from django.contrib import messages, auth
 import os
 from django.conf import settings
+from .models import Ativacao
+from hashlib import sha256
 
 # Utils
 from .utils import password_is_valid, email_html
@@ -36,6 +38,11 @@ def cadastro(request):
             )
             
             user.save()
+
+            token = sha256(f"{username}{email}".encode()).hexdigest()
+
+            ativacao = Ativacao(token=token, user=user)
+            ativacao.save()
 
             path_template = os.path.join(settings.BASE_DIR, 'autenticacao/templates/emails/cadastro_confirmado.html')
             email_html(path_template, 'Cadastro confirmado', [email,], username=username)
