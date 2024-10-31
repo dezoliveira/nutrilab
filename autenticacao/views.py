@@ -5,9 +5,11 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.contrib.messages import constants
 from django.contrib import messages, auth
+import os
+from django.conf import settings
 
 # Utils
-from .utils import password_is_valid
+from .utils import password_is_valid, email_html
 
 # Create your views here.
 def cadastro(request):
@@ -32,8 +34,12 @@ def cadastro(request):
                 password=senha,
                 is_active=False
             )
-
+            
             user.save()
+
+            path_template = os.path.join(settings.BASE_DIR, 'autenticacao/templates/emails/cadastro_confirmado.html')
+            email_html(path_template, 'Cadastro confirmado', [email,], username=username)
+
             messages.add_message(request, constants.SUCCESS, 'Usuário cadastrado com sucesso')
             return redirect('/auth/login')
 
